@@ -1,0 +1,13 @@
+instances:
+  - name: "logstash"
+    dns:
+      - "logstash01"
+      - "localhost"  # so that it is easy to curl node-0001 from
+                     # host machine
+    ip:
+      - "192.168.44.12"
+  - name: "filebeat-node1"
+    dns:
+      - "beats-client"
+    ip:
+      - "192.168.44.14"
