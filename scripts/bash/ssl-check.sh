@@ -12,16 +12,12 @@ for file in /etc/nginx/ssl/*.crt; do
     TODAYSEC=$(date +%s)
     EXPIRYCALC=$(echo "($EXPIRYSEC-$TODAYSEC)/86400" | bc )
 
-    if [ $EXPIRYCALC -lt $EXPIRYALERTDAYS ] ; then
+    if [ $? != 0 ] || [ $EXPIRYCALC -lt $EXPIRYALERTDAYS ] ; then
         echo "SSL certificate for $OUT needs to be renewed by $EXPIRYSIMPLE (expires across $EXPIRYCALC days)" >> $LOGFILE
-    #if [ $? != 0 ]; then
-    #    echo "SSL certificate for $file has expired $EXPIRYSIMPLE (in $EXPIRYCALC days)" >> $LOGFILE
-    #fi
+        # Report to email
+        mail -s "### ALERT ### SSL Report from STG on $(date)" $REPORTEMAIL <$LOGFILE
     fi
 done
-
-# Report
-mail -s "### ALERT ### SSL Report from STG on $(date)" $REPORTEMAIL <$LOGFILE
 
 # Clear file
 if [ -f SSLreport.txt ]; then
