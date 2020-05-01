@@ -1,5 +1,6 @@
 # Swap 
 free -t | grep Swap | awk '{printf("Current Swap Utilization is : %.2f%"), $3/$2*100}'
+free | grep Swap | awk '{ printf("free: %.4f %\n", $4/$2 * 100.0) }'
 
 # RAM
 free -t | grep Mem | awk '{printf("Current Memory Utilization is : %.2f%"), $3/$2*100}'
