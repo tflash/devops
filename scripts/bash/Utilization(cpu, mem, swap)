@@ -6,3 +6,6 @@ free -t | grep Mem | awk '{printf("Current Memory Utilization is : %.2f%"), $3/$
 
 # CPU
 top -b -n1 | grep ^%Cpu | awk '{printf("Current CPU Utilization is : %.2f%"), 100-$8}' 
+
+# Collect data MEM in %
+free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f%"), $3/$2*100}'
