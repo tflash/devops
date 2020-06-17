@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#/usr/bin/rkhunter –versioncheck –nocolors
+
+/usr/bin/rkhunter --update --nocolors > /tmp/rkhunter-warn.log
+RECIPIENTS=ptts.po.ua@playtech.com
+FROM=no-reply@ptts.com
+OUTPUT=`/usr/bin/rkhunter --cronjob --report-warnings-only --nocolors`
+TMPDIR="/tmp/hsperfdata_apps"
+
+if [ -d "$TMPDIR" ]; then
+    echo "Directory $TMPDIR exists." && rm -Rf $TMPDIR
+    fi
+
+    if [ "$OUTPUT" != "" ]
+    then
+        echo $OUTPUT | mail -s "[rkhunter][TST] Warnings found for $(hostname) " -r $FROM $RECIPIENTS
+        fi
