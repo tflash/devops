@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXPIRYALERTDAYS=157
+EXPIRYALERTDAYS=60
 REPORTEMAIL="tflash8@gmail.com"
 LOGFILE=SSLreport.txt
 
@@ -15,7 +15,7 @@ for file in /etc/nginx/ssl/*.crt; do
     if [ $? != 0 ] || [ $EXPIRYCALC -lt $EXPIRYALERTDAYS ] ; then
         echo "SSL certificate for $OUT needs to be renewed by $EXPIRYSIMPLE (expires across $EXPIRYCALC days)" >> $LOGFILE
         # Report to email
-        mail -s "### ALERT ### SSL Report from STG on $(date)" $REPORTEMAIL <$LOGFILE
+        mail -s "### ALERT ### SSL Report from Staging on $(date)" $REPORTEMAIL <$LOGFILE
     fi
 done
 
