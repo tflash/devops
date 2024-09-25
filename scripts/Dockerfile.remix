@@ -1,0 +1,66 @@
+# base node image
+FROM node:20-alpine as base
+
+ARG SHOPIFY_API_KEY
+ENV SHOPIFY_API_KEY=$SHOPIFY_API_KEY
+
+ARG SHOPIFY_API_SECRET
+ENV SHOPIFY_API_SECRET=$SHOPIFY_API_SECRET
+
+ARG HOST
+ENV HOST=$HOST
+
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
+ARG MAIL_HOST
+ENV MAIL_HOST=$MAIL_HOST
+
+ARG MAIL_PORT
+ENV MAIL_PORT=$MAIL_PORT
+
+ARG MAIL_SECURE
+ENV MAIL_SECURE=$MAIL_SECURE
+
+ARG MAIL_USER
+ENV MAIL_USER=$MAIL_USER
+
+ARG MAIL_PASS
+ENV MAIL_PASS=$MAIL_PASS
+
+ARG MAIL_SUPPORT
+ENV MAIL_SUPPORT=$MAIL_SUPPORT
+
+ARG PORT
+ENV PORT=$PORT
+
+# Install all node_modules, including dev dependencies
+FROM base as deps
+WORKDIR /app
+ADD package.json package-lock.json* ./
+RUN yarn install
+
+# Setup production node_modules
+FROM base as production-deps
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+ADD package*.json ./
+RUN yarn install --production --ignore-scripts --prefer-offline --frozen-lockfile
+
+# Build the app
+FROM base as build
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+ADD . .
+RUN yarn build
+
+# Finally, build the production image with minimal footprint
+FROM base
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=production-deps /app/node_modules /app/node_modules
+COPY --from=build /app/build /app/build
+COPY --from=build /app/public /app/public
+ADD . .
+CMD ["yarn", "docker-start"]
